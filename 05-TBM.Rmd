@@ -1,0 +1,14 @@
+# Boosted Trees {#BST}
+
+In this chapter, you will see the boosting methodology with a focus on the Gradient Boosting Machine (GBM) algorithm, another popular tree-based ensemble method. Here you'll learn how to train, tune and evaluate GBM models in R.
+
+_____________
+
+Introduction to boosting
+
+<iframe src="https://drive.google.com/file/d/1tBZC0e-AAKO_6S-re1pIRgEjJNZlSld9/preview" width="640" height="480"></iframe>
+
+______________
+
+## Bagged trees vs. boosted trees
+

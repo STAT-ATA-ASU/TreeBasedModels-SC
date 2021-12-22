@@ -1,0 +1,288 @@
+# Classification Trees {#CT}
+
+In this course you'll learn how to work with tree-based models in R. This course covers everything from using a single tree for regression or classification to more advanced ensemble methods. You'll learn to implement bagged trees, Random Forests, and boosted trees using the Gradient Boosting Machine, or GBM. These powerful techinques will allow you to create high performance regression and classification models for your data.
+
+_______
+
+Welcome to the course!
+
+<iframe src="https://drive.google.com/file/d/1kwQ_g67Vbw-9SsP1QN99GFnfh-0OatfZ/preview" width="640" height="480"></iframe>
+
+_______
+
+```{r, echo = FALSE}
+if(!dir.exists("./Data")){dir.create("./Data")}
+url <- "https://assets.datacamp.com/production/repositories/710/datasets/b649085c43111c83ba7ab6ec172d83cdc14a2942/credit.csv"
+if(!file.exists("./Data/credit.csv")){ download.file(url, destfile = "./Data/credit.csv")}
+credit <- read.csv("./Data/credit.csv")
+creditsub <- credit %>% 
+  select(months_loan_duration, percent_of_income, years_at_residence, age, default)
+```
+
+## Build a classification tree
+
+Let's get started and build our first classification tree. A classification tree is a decision tree that performs a classification (vs regression) task.
+
+You will train a decision tree model to understand which loan applications are at higher risk of default using a subset of the [German Credit Dataset](https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29). The response variable, called "default", indicates _whether the loan went into a default or not_, which means this is a binary classification problem (there are just two classes).
+
+You will use the `rpart` package to fit the decision tree and the `rpart.plot` package to visualize the tree.
+
+_________
+
+### Exercise{-}
+
+The data frame `creditsub` is in the workspace. This data frame is a subset of the original German Credit Dataset, which we will use to train our first classification tree model.
+
+* Take a look at the data using the `str()` function.
+
+```{r}
+str(creditsub)
+```
+
+* In R, formulas are used to model the response as a function of some set of predictors, so the formula here is `default ~ .`, which means use all columns (except the response column) as predictors.
+
+* Fit the classification decision tree using the `rpart()` function from the `rpart` package. In the `rpart()` function, note that you'll also have to provide the training data frame.
+
+```{r}
+library(rpart)
+# Create the model
+credit_model <- rpart(formula = default ~ ., 
+                      data = creditsub, 
+                      method = "class")
+credit_model
+```
+
+* Using the model object that you create, plot the decision tree model using the `rpart.plot()` function from the `rpart.plot` package.
+
+```{r}
+library(rpart.plot)
+# Display the results
+rpart.plot(x = credit_model, yesno = 2)
+```
+
+**Each node shows:**
+
+  + the predicted class (default: no or yes),
+  + the predicted probability of default,
+  + the percentage of observations in the node.
+
+_________
+
+Introduction to classification trees
+
+<iframe src="https://drive.google.com/file/d/1IZg2ELuoAFETWoMI0ROf3ro-j3VoYIu0/preview" width="640" height="480"></iframe>
+
+__________
+
+### Advantages of tree-based methods{-}
+
+What are some advantages of using tree-based methods over other supervised learning methods?
+
+
+1. Model interpretability (easy to understand why a prediction is made).
+
+2. Model performance (trees have superior performance compared to other machine learning algorithms).
+
+3. No pre-processing (e.g. normalization) of the data is required.
+
+1 and 2 are true.
+
+**1 and 3 are true.**
+
+___________
+
+## Prediction with a classification tree
+
+Let's use the decision tree that you trained in the first exercise. The tree predicts whether a loan applicant will default on their loan (or not).
+
+Assume we have a loan applicant who:
+
+* is applying for a 40-month loan
+* is 35 years old
+* has been at their current residence for 6 years
+
+After following the correct path down the tree for this individual's set of data, you will end up in a "Yes" or "No" bucket (in tree terminology, we'd call this a "leaf") which represents the predicted class. Ending up in a "Yes" leaf means that the model predicts that this individual will default on their loan, where as a "No" prediction means that they will not default on their loan.
+
+Starting with the top node of the tree, you must evaluate a query about a particular attribute of your data point (e.g. is months_loan_duration < 35?). If the answer is yes, then you go to the left at the split; if the answer is no, then you will go right. At the next node you repeat the process until you end up in a leaf node, at which point you'll have a predicted class for your data point.
+
+```{r, echo = FALSE}
+rpart.plot(x = credit_model, yesno = 2)
+```
+
+According to the model, will this person default on their loan?  **No**
+
+____________
+
+Overview of the modeling process
+
+<iframe src="https://drive.google.com/file/d/1C17a1RZAEgBdlPHTNvx5x-OPH1zS4bhB/preview" width="640" height="480"></iframe>
+
+____________
+
+## Train/test split
+
+For this exercise, you'll randomly split the [German Credit Dataset](https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29) into two pieces: a training set (80%) called `credit_train` and a test set (20%) that we will call `credit_test`. We'll use these two sets throughout the chapter.
+
+The `credit` data frame is loaded into the workspace.
+
+* Define `n`, the number of rows in the credit data frame.
+
+```{r}
+# Total number of rows in the credit data frame
+(n <- nrow(credit))
+```
+
+* Define `n_train` to be ~80% of `n`.
+
+```{r}
+# Number of rows for the training set (80% of the dataset)
+(n_train <- round(.80 * n)) 
+```
+
+* Set a seed (for reproducibility) and then sample `n_train` rows to define the set of training set indices.
+
+```{r}
+# Create a vector of indices which is an 80% random sample
+set.seed(321)
+train_indices <- sample(1:n, n_train)
+```
+
+* Using row indices, subset the `credit` data frame to create two new datasets: `credit_train` and `credit_test`
+
+```{r}
+# Subset the credit data frame to training indices only
+credit_train <- credit[train_indices, ]  
+  
+# Exclude the training indices to create the test set
+credit_test <- credit[-train_indices, ]  
+```
+
+________
+
+## Train a classification tree model
+
+In this exercise, you will train a model on the newly created training set and print the model object to get a sense of the results.
+
+* Train a classification tree using the `credit_train` data frame.
+
+```{r}
+# Train the model (to predict 'default')
+credit_model <- rpart(formula = default ~ ., 
+                      data = credit_train, 
+                      method = "class")
+```
+
+* Look at the model output by printing the model object.
+
+```{r}
+# Look at the model output                      
+print(credit_model)
+```
+
+```{r}
+rpart.plot(x = credit_model, yesno = 2)
+```
+
+
+______
+
+Evaluating classification model performance
+
+<iframe src="https://drive.google.com/file/d/1VYyv4hIOcwA7p16cr3CaIIkl8ERATeYe/preview" width="640" height="480"></iframe>
+
+______
+
+## Compute confusion matrix
+
+As discussed in the previous video, there are a number of different metrics by which you can measure the performance of a classification model. In this exercise, we will evaluate the performance of the model using test set classification error. A confusion matrix is a convenient way to examine the per-class error rates for all classes at once.
+
+The `confusionMatrix()` function from the `caret` package prints both the confusion matrix and a number of other useful classification metrics such as "Accuracy" (fraction of correctly classified instances).
+
+The `caret` package has been loaded for you.
+
+```{r}
+library(caret)
+```
+
+* Generate class predictions for the `credit_test` data frame using the `credit_model` object.
+
+```{r}
+# Generate predicted classes using the model object
+class_prediction <- predict(object = credit_model,  
+                        newdata = credit_test,   
+                        type = "class") 
+# This is not in Data Camp but needed for last Chapter Exercise
+dt_preds <- predict(object = credit_model,
+                    newdata = credit_test,
+                    type = "prob")[, "yes"]
+# mean(dt_preds)
+```
+
+* Using the `caret::confusionMatrix()` function, compute the confusion matrix for the test set.
+
+```{r}
+# Calculate the confusion matrix for the test set
+confusionMatrix(data = class_prediction,       
+                reference = credit_test$default)  
+```
+
+________
+
+Splitting criterion in trees
+
+<iframe src="https://drive.google.com/file/d/1hPa1NHdQrMwgSXkl6e4xPSSi3GihkeZb/preview" width="640" height="480"></iframe>
+
+_______
+
+## Compare models with a different splitting criterion
+
+Train two models that use a different splitting criterion and use the validation set to choose a "best" model from this group. To do this you'll use the `parms` argument of the `rpart()` function. This argument takes a named list that contains values of different parameters you can use to change how the model is trained. Set the parameter `split` to control the splitting criterion.
+
+The datasets `credit_test` and `credit_train` have already been loaded for you.
+
+* Train a model, splitting the tree based on gini index.
+
+```{r}
+# Train a gini-based model
+credit_model1 <- rpart(formula = default ~ ., 
+                       data = credit_train, 
+                       method = "class",
+                       parms = list(split = "gini"))
+```
+
+* Train a model, splitting the tree based on information index.
+
+```{r}
+# Train an information-based model
+credit_model2 <- rpart(formula = default ~ ., 
+                       data = credit_train, 
+                       method = "class",
+                       parms = list(split = "information"))
+```
+
+* Generate predictions on the test set using both models.
+
+```{r}
+# Generate predictions on the test set using the gini model
+pred1 <- predict(object = credit_model1, 
+             newdata = credit_test,
+             type = "class")    
+
+# Generate predictions on the test set using the information model
+pred2 <- predict(object = credit_model2, 
+             newdata = credit_test,
+             type = "class")
+```
+
+* Classification error is the fraction of incorrectly classified instances. Compute and compare the test set classification error of the two models by using the `ce()` function from the `Metrics` package.
+
+```{r}
+library(Metrics)
+# Compare classification error
+ce(actual = credit_test$default, 
+   predicted = pred1)
+ce(actual = credit_test$default, 
+   predicted = pred2)  
+```
+
+____________

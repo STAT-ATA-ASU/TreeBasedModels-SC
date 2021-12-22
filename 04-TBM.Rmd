@@ -1,0 +1,14 @@
+# Random Forests
+
+In this chapter, you will learn about the Random Forest algorithm, another tree-based ensemble method. Random Forest is a modified version of bagged trees with better performance. Here you'll learn how to train, tune and evaluate Random Forest models in R.
+
+___________
+
+Introduction to Random Forest
+
+<iframe src="https://drive.google.com/file/d/1eJlOvYVFq919Fxm45FZk2LS5ynaRaORJ/preview" width="640" height="480"></iframe>
+
+___________
+
+## Bagged trees vs. Random Forest
+

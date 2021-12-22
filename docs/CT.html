@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Classification Trees | Tree Based Models in R</title>
+  <meta name="description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Classification Trees | Tree Based Models in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Classification Trees | Tree Based Models in R" />
+  
+  <meta name="twitter:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  
+
+<meta name="author" content="Alan T. Arnholt" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="RT.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Tree Based Models</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a></li>
+<li class="chapter" data-level="2" data-path="CT.html"><a href="CT.html"><i class="fa fa-check"></i><b>2</b> Classification Trees</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="CT.html"><a href="CT.html#build-a-classification-tree"><i class="fa fa-check"></i><b>2.1</b> Build a classification tree</a>
+<ul>
+<li class="chapter" data-level="" data-path="CT.html"><a href="CT.html#exercise"><i class="fa fa-check"></i>Exercise</a></li>
+<li class="chapter" data-level="" data-path="CT.html"><a href="CT.html#advantages-of-tree-based-methods"><i class="fa fa-check"></i>Advantages of tree-based methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="CT.html"><a href="CT.html#prediction-with-a-classification-tree"><i class="fa fa-check"></i><b>2.2</b> Prediction with a classification tree</a></li>
+<li class="chapter" data-level="2.3" data-path="CT.html"><a href="CT.html#traintest-split"><i class="fa fa-check"></i><b>2.3</b> Train/test split</a></li>
+<li class="chapter" data-level="2.4" data-path="CT.html"><a href="CT.html#train-a-classification-tree-model"><i class="fa fa-check"></i><b>2.4</b> Train a classification tree model</a></li>
+<li class="chapter" data-level="2.5" data-path="CT.html"><a href="CT.html#compute-confusion-matrix"><i class="fa fa-check"></i><b>2.5</b> Compute confusion matrix</a></li>
+<li class="chapter" data-level="2.6" data-path="CT.html"><a href="CT.html#compare-models-with-a-different-splitting-criterion"><i class="fa fa-check"></i><b>2.6</b> Compare models with a different splitting criterion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="RT.html"><a href="RT.html"><i class="fa fa-check"></i><b>3</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="RT.html"><a href="RT.html#classification-vs.-regression"><i class="fa fa-check"></i><b>3.1</b> Classification vs. regression</a></li>
+<li class="chapter" data-level="3.2" data-path="RT.html"><a href="RT.html#split-the-data"><i class="fa fa-check"></i><b>3.2</b> Split the data</a></li>
+<li class="chapter" data-level="3.3" data-path="RT.html"><a href="RT.html#train-a-regression-tree-model"><i class="fa fa-check"></i><b>3.3</b> Train a regression tree model</a></li>
+<li class="chapter" data-level="3.4" data-path="RT.html"><a href="RT.html#evaluate-a-regression-tree-model"><i class="fa fa-check"></i><b>3.4</b> Evaluate a regression tree model</a></li>
+<li class="chapter" data-level="3.5" data-path="RT.html"><a href="RT.html#tuning-the-model"><i class="fa fa-check"></i><b>3.5</b> Tuning the model</a></li>
+<li class="chapter" data-level="3.6" data-path="RT.html"><a href="RT.html#generate-a-grid-of-hyperparameter-values"><i class="fa fa-check"></i><b>3.6</b> Generate a grid of hyperparameter values</a></li>
+<li class="chapter" data-level="3.7" data-path="RT.html"><a href="RT.html#generate-a-grid-of-models"><i class="fa fa-check"></i><b>3.7</b> Generate a grid of models</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="BT.html"><a href="BT.html"><i class="fa fa-check"></i><b>4</b> Bagged Trees</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="BT.html"><a href="BT.html#advantages-of-bagged-trees"><i class="fa fa-check"></i><b>4.1</b> Advantages of bagged trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-forests.html"><a href="random-forests.html"><i class="fa fa-check"></i><b>5</b> Random Forests</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="random-forests.html"><a href="random-forests.html#bagged-trees-vs.-random-forest"><i class="fa fa-check"></i><b>5.1</b> Bagged trees vs. Random Forest</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="BST.html"><a href="BST.html"><i class="fa fa-check"></i><b>6</b> Boosted Trees</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="BST.html"><a href="BST.html#bagged-trees-vs.-boosted-trees"><i class="fa fa-check"></i><b>6.1</b> Bagged trees vs. boosted trees</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><a href="https://learn.datacamp.com/courses/tree-based-models-in-r">Tree Based Models in R</a></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="CT" class="section level1" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Classification Trees</h1>
+<p>In this course you’ll learn how to work with tree-based models in R. This course covers everything from using a single tree for regression or classification to more advanced ensemble methods. You’ll learn to implement bagged trees, Random Forests, and boosted trees using the Gradient Boosting Machine, or GBM. These powerful techinques will allow you to create high performance regression and classification models for your data.</p>
+<hr />
+<p>Welcome to the course!</p>
+<iframe src="https://drive.google.com/file/d/1kwQ_g67Vbw-9SsP1QN99GFnfh-0OatfZ/preview" width="640" height="480">
+</iframe>
+<hr />
+<div id="build-a-classification-tree" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Build a classification tree</h2>
+<p>Let’s get started and build our first classification tree. A classification tree is a decision tree that performs a classification (vs regression) task.</p>
+<p>You will train a decision tree model to understand which loan applications are at higher risk of default using a subset of the <a href="https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29">German Credit Dataset</a>. The response variable, called “default,” indicates <em>whether the loan went into a default or not</em>, which means this is a binary classification problem (there are just two classes).</p>
+<p>You will use the <code>rpart</code> package to fit the decision tree and the <code>rpart.plot</code> package to visualize the tree.</p>
+<hr />
+<div id="exercise" class="section level3 unnumbered">
+<h3>Exercise</h3>
+<p>The data frame <code>creditsub</code> is in the workspace. This data frame is a subset of the original German Credit Dataset, which we will use to train our first classification tree model.</p>
+<ul>
+<li>Take a look at the data using the <code>str()</code> function.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="CT.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(creditsub)</span></code></pre></div>
+<pre><code>&#39;data.frame&#39;:   1000 obs. of  5 variables:
+ $ months_loan_duration: int  6 48 12 42 24 36 24 36 12 30 ...
+ $ percent_of_income   : int  4 2 2 2 3 2 3 2 2 4 ...
+ $ years_at_residence  : int  4 2 3 4 4 4 4 2 4 2 ...
+ $ age                 : int  67 22 49 45 53 35 53 35 61 28 ...
+ $ default             : Factor w/ 2 levels &quot;no&quot;,&quot;yes&quot;: 1 2 1 1 2 1 1 1 1 2 ...</code></pre>
+<ul>
+<li><p>In R, formulas are used to model the response as a function of some set of predictors, so the formula here is <code>default ~ .</code>, which means use all columns (except the response column) as predictors.</p></li>
+<li><p>Fit the classification decision tree using the <code>rpart()</code> function from the <code>rpart</code> package. In the <code>rpart()</code> function, note that you’ll also have to provide the training data frame.</p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="CT.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb3-2"><a href="CT.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the model</span></span>
+<span id="cb3-3"><a href="CT.html#cb3-3" aria-hidden="true" tabindex="-1"></a>credit_model <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="at">formula =</span> default <span class="sc">~</span> ., </span>
+<span id="cb3-4"><a href="CT.html#cb3-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> creditsub, </span>
+<span id="cb3-5"><a href="CT.html#cb3-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">method =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb3-6"><a href="CT.html#cb3-6" aria-hidden="true" tabindex="-1"></a>credit_model</span></code></pre></div>
+<pre><code>n= 1000 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+ 1) root 1000 300 no (0.7000000 0.3000000)  
+   2) months_loan_duration&lt; 34.5 830 218 no (0.7373494 0.2626506) *
+   3) months_loan_duration&gt;=34.5 170  82 no (0.5176471 0.4823529)  
+     6) age&gt;=29.5 112  43 no (0.6160714 0.3839286)  
+      12) age&lt; 56.5 102  35 no (0.6568627 0.3431373)  
+        24) years_at_residence&lt; 3.5 56  14 no (0.7500000 0.2500000) *
+        25) years_at_residence&gt;=3.5 46  21 no (0.5434783 0.4565217)  
+          50) age&lt; 45.5 37  13 no (0.6486486 0.3513514) *
+          51) age&gt;=45.5 9   1 yes (0.1111111 0.8888889) *
+      13) age&gt;=56.5 10   2 yes (0.2000000 0.8000000) *
+     7) age&lt; 29.5 58  19 yes (0.3275862 0.6724138) *</code></pre>
+<ul>
+<li>Using the model object that you create, plot the decision tree model using the <code>rpart.plot()</code> function from the <code>rpart.plot</code> package.</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="CT.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb5-2"><a href="CT.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the results</span></span>
+<span id="cb5-3"><a href="CT.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(<span class="at">x =</span> credit_model, <span class="at">yesno =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p><strong>Each node shows:</strong></p>
+<ul>
+<li>the predicted class (default: no or yes),</li>
+<li>the predicted probability of default,</li>
+<li>the percentage of observations in the node.</li>
+</ul>
+<hr />
+<p>Introduction to classification trees</p>
+<iframe src="https://drive.google.com/file/d/1IZg2ELuoAFETWoMI0ROf3ro-j3VoYIu0/preview" width="640" height="480">
+</iframe>
+<hr />
+</div>
+<div id="advantages-of-tree-based-methods" class="section level3 unnumbered">
+<h3>Advantages of tree-based methods</h3>
+<p>What are some advantages of using tree-based methods over other supervised learning methods?</p>
+<ol style="list-style-type: decimal">
+<li><p>Model interpretability (easy to understand why a prediction is made).</p></li>
+<li><p>Model performance (trees have superior performance compared to other machine learning algorithms).</p></li>
+<li><p>No pre-processing (e.g. normalization) of the data is required.</p></li>
+</ol>
+<p>1 and 2 are true.</p>
+<p><strong>1 and 3 are true.</strong></p>
+<hr />
+</div>
+</div>
+<div id="prediction-with-a-classification-tree" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Prediction with a classification tree</h2>
+<p>Let’s use the decision tree that you trained in the first exercise. The tree predicts whether a loan applicant will default on their loan (or not).</p>
+<p>Assume we have a loan applicant who:</p>
+<ul>
+<li>is applying for a 40-month loan</li>
+<li>is 35 years old</li>
+<li>has been at their current residence for 6 years</li>
+</ul>
+<p>After following the correct path down the tree for this individual’s set of data, you will end up in a “Yes” or “No” bucket (in tree terminology, we’d call this a “leaf”) which represents the predicted class. Ending up in a “Yes” leaf means that the model predicts that this individual will default on their loan, where as a “No” prediction means that they will not default on their loan.</p>
+<p>Starting with the top node of the tree, you must evaluate a query about a particular attribute of your data point (e.g. is months_loan_duration &lt; 35?). If the answer is yes, then you go to the left at the split; if the answer is no, then you will go right. At the next node you repeat the process until you end up in a leaf node, at which point you’ll have a predicted class for your data point.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>According to the model, will this person default on their loan? <strong>No</strong></p>
+<hr />
+<p>Overview of the modeling process</p>
+<iframe src="https://drive.google.com/file/d/1C17a1RZAEgBdlPHTNvx5x-OPH1zS4bhB/preview" width="640" height="480">
+</iframe>
+<hr />
+</div>
+<div id="traintest-split" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Train/test split</h2>
+<p>For this exercise, you’ll randomly split the <a href="https://archive.ics.uci.edu/ml/datasets/Statlog+%28German+Credit+Data%29">German Credit Dataset</a> into two pieces: a training set (80%) called <code>credit_train</code> and a test set (20%) that we will call <code>credit_test</code>. We’ll use these two sets throughout the chapter.</p>
+<p>The <code>credit</code> data frame is loaded into the workspace.</p>
+<ul>
+<li>Define <code>n</code>, the number of rows in the credit data frame.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="CT.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total number of rows in the credit data frame</span></span>
+<span id="cb6-2"><a href="CT.html#cb6-2" aria-hidden="true" tabindex="-1"></a>(n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(credit))</span></code></pre></div>
+<pre><code>[1] 1000</code></pre>
+<ul>
+<li>Define <code>n_train</code> to be ~80% of <code>n</code>.</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="CT.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of rows for the training set (80% of the dataset)</span></span>
+<span id="cb8-2"><a href="CT.html#cb8-2" aria-hidden="true" tabindex="-1"></a>(n_train <span class="ot">&lt;-</span> <span class="fu">round</span>(.<span class="dv">80</span> <span class="sc">*</span> n)) </span></code></pre></div>
+<pre><code>[1] 800</code></pre>
+<ul>
+<li>Set a seed (for reproducibility) and then sample <code>n_train</code> rows to define the set of training set indices.</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="CT.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a vector of indices which is an 80% random sample</span></span>
+<span id="cb10-2"><a href="CT.html#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb10-3"><a href="CT.html#cb10-3" aria-hidden="true" tabindex="-1"></a>train_indices <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, n_train)</span></code></pre></div>
+<ul>
+<li>Using row indices, subset the <code>credit</code> data frame to create two new datasets: <code>credit_train</code> and <code>credit_test</code></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="CT.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the credit data frame to training indices only</span></span>
+<span id="cb11-2"><a href="CT.html#cb11-2" aria-hidden="true" tabindex="-1"></a>credit_train <span class="ot">&lt;-</span> credit[train_indices, ]  </span>
+<span id="cb11-3"><a href="CT.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-4"><a href="CT.html#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Exclude the training indices to create the test set</span></span>
+<span id="cb11-5"><a href="CT.html#cb11-5" aria-hidden="true" tabindex="-1"></a>credit_test <span class="ot">&lt;-</span> credit[<span class="sc">-</span>train_indices, ]  </span></code></pre></div>
+<hr />
+</div>
+<div id="train-a-classification-tree-model" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Train a classification tree model</h2>
+<p>In this exercise, you will train a model on the newly created training set and print the model object to get a sense of the results.</p>
+<ul>
+<li>Train a classification tree using the <code>credit_train</code> data frame.</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="CT.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model (to predict &#39;default&#39;)</span></span>
+<span id="cb12-2"><a href="CT.html#cb12-2" aria-hidden="true" tabindex="-1"></a>credit_model <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="at">formula =</span> default <span class="sc">~</span> ., </span>
+<span id="cb12-3"><a href="CT.html#cb12-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> credit_train, </span>
+<span id="cb12-4"><a href="CT.html#cb12-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">method =</span> <span class="st">&quot;class&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Look at the model output by printing the model object.</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="CT.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at the model output                      </span></span>
+<span id="cb13-2"><a href="CT.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(credit_model)</span></code></pre></div>
+<pre><code>n= 800 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+  1) root 800 234 no (0.70750000 0.29250000)  
+    2) checking_balance=&gt; 200 DM,unknown 359  43 no (0.88022284 0.11977716) *
+    3) checking_balance=&lt; 0 DM,1 - 200 DM 441 191 no (0.56689342 0.43310658)  
+      6) months_loan_duration&lt; 20.5 233  77 no (0.66952790 0.33047210)  
+       12) credit_history=critical,good,poor 210  61 no (0.70952381 0.29047619)  
+         24) purpose=business,car0 18   0 no (1.00000000 0.00000000) *
+         25) purpose=car,education,furniture/appliances,renovations 192  61 no (0.68229167 0.31770833)  
+           50) other_credit=none 167  46 no (0.72455090 0.27544910) *
+           51) other_credit=bank,store 25  10 yes (0.40000000 0.60000000)  
+            102) job=management,unskilled 11   4 no (0.63636364 0.36363636) *
+            103) job=skilled 14   3 yes (0.21428571 0.78571429) *
+       13) credit_history=perfect,very good 23   7 yes (0.30434783 0.69565217) *
+      7) months_loan_duration&gt;=20.5 208  94 yes (0.45192308 0.54807692)  
+       14) savings_balance=&gt; 1000 DM,unknown 40  10 no (0.75000000 0.25000000) *
+       15) savings_balance=&lt; 100 DM,100 - 500 DM,500 - 1000 DM 168  64 yes (0.38095238 0.61904762)  
+         30) months_loan_duration&lt; 47.5 137  61 yes (0.44525547 0.55474453)  
+           60) amount&gt;=2313 103  48 no (0.53398058 0.46601942)  
+            120) age&gt;=29.5 57  21 no (0.63157895 0.36842105)  
+              240) credit_history=critical,poor 21   2 no (0.90476190 0.09523810) *
+              241) credit_history=good,perfect,very good 36  17 yes (0.47222222 0.52777778)  
+                482) purpose=car,car0 11   2 no (0.81818182 0.18181818) *
+                483) purpose=business,education,furniture/appliances,renovations 25   8 yes (0.32000000 0.68000000) *
+            121) age&lt; 29.5 46  19 yes (0.41304348 0.58695652)  
+              242) amount&lt; 6733 38  19 no (0.50000000 0.50000000)  
+                484) percent_of_income&lt; 2.5 16   4 no (0.75000000 0.25000000) *
+                485) percent_of_income&gt;=2.5 22   7 yes (0.31818182 0.68181818) *
+              243) amount&gt;=6733 8   0 yes (0.00000000 1.00000000) *
+           61) amount&lt; 2313 34   6 yes (0.17647059 0.82352941) *
+         31) months_loan_duration&gt;=47.5 31   3 yes (0.09677419 0.90322581) *</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="CT.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(<span class="at">x =</span> credit_model, <span class="at">yesno =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="576" style="display: block; margin: auto;" /></p>
+<hr />
+<p>Evaluating classification model performance</p>
+<iframe src="https://drive.google.com/file/d/1VYyv4hIOcwA7p16cr3CaIIkl8ERATeYe/preview" width="640" height="480">
+</iframe>
+<hr />
+</div>
+<div id="compute-confusion-matrix" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Compute confusion matrix</h2>
+<p>As discussed in the previous video, there are a number of different metrics by which you can measure the performance of a classification model. In this exercise, we will evaluate the performance of the model using test set classification error. A confusion matrix is a convenient way to examine the per-class error rates for all classes at once.</p>
+<p>The <code>confusionMatrix()</code> function from the <code>caret</code> package prints both the confusion matrix and a number of other useful classification metrics such as “Accuracy” (fraction of correctly classified instances).</p>
+<p>The <code>caret</code> package has been loaded for you.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="CT.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code></pre></div>
+<ul>
+<li>Generate class predictions for the <code>credit_test</code> data frame using the <code>credit_model</code> object.</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="CT.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predicted classes using the model object</span></span>
+<span id="cb17-2"><a href="CT.html#cb17-2" aria-hidden="true" tabindex="-1"></a>class_prediction <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> credit_model,  </span>
+<span id="cb17-3"><a href="CT.html#cb17-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">newdata =</span> credit_test,   </span>
+<span id="cb17-4"><a href="CT.html#cb17-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;class&quot;</span>) </span>
+<span id="cb17-5"><a href="CT.html#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This is not in Data Camp but needed for last Chapter Exercise</span></span>
+<span id="cb17-6"><a href="CT.html#cb17-6" aria-hidden="true" tabindex="-1"></a>dt_preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> credit_model,</span>
+<span id="cb17-7"><a href="CT.html#cb17-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">newdata =</span> credit_test,</span>
+<span id="cb17-8"><a href="CT.html#cb17-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)[, <span class="st">&quot;yes&quot;</span>]</span>
+<span id="cb17-9"><a href="CT.html#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># mean(dt_preds)</span></span></code></pre></div>
+<ul>
+<li>Using the <code>caret::confusionMatrix()</code> function, compute the confusion matrix for the test set.</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="CT.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the confusion matrix for the test set</span></span>
+<span id="cb18-2"><a href="CT.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> class_prediction,       </span>
+<span id="cb18-3"><a href="CT.html#cb18-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">reference =</span> credit_test<span class="sc">$</span>default)  </span></code></pre></div>
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  no yes
+       no  121  45
+       yes  13  21
+                                          
+               Accuracy : 0.71            
+                 95% CI : (0.6418, 0.7718)
+    No Information Rate : 0.67            
+    P-Value [Acc &gt; NIR] : 0.1291          
+                                          
+                  Kappa : 0.2522          
+                                          
+ Mcnemar&#39;s Test P-Value : 4.691e-05       
+                                          
+            Sensitivity : 0.9030          
+            Specificity : 0.3182          
+         Pos Pred Value : 0.7289          
+         Neg Pred Value : 0.6176          
+             Prevalence : 0.6700          
+         Detection Rate : 0.6050          
+   Detection Prevalence : 0.8300          
+      Balanced Accuracy : 0.6106          
+                                          
+       &#39;Positive&#39; Class : no              
+                                          </code></pre>
+<hr />
+<p>Splitting criterion in trees</p>
+<iframe src="https://drive.google.com/file/d/1hPa1NHdQrMwgSXkl6e4xPSSi3GihkeZb/preview" width="640" height="480">
+</iframe>
+<hr />
+</div>
+<div id="compare-models-with-a-different-splitting-criterion" class="section level2" number="2.6">
+<h2><span class="header-section-number">2.6</span> Compare models with a different splitting criterion</h2>
+<p>Train two models that use a different splitting criterion and use the validation set to choose a “best” model from this group. To do this you’ll use the <code>parms</code> argument of the <code>rpart()</code> function. This argument takes a named list that contains values of different parameters you can use to change how the model is trained. Set the parameter <code>split</code> to control the splitting criterion.</p>
+<p>The datasets <code>credit_test</code> and <code>credit_train</code> have already been loaded for you.</p>
+<ul>
+<li>Train a model, splitting the tree based on gini index.</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="CT.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train a gini-based model</span></span>
+<span id="cb20-2"><a href="CT.html#cb20-2" aria-hidden="true" tabindex="-1"></a>credit_model1 <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="at">formula =</span> default <span class="sc">~</span> ., </span>
+<span id="cb20-3"><a href="CT.html#cb20-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> credit_train, </span>
+<span id="cb20-4"><a href="CT.html#cb20-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">&quot;class&quot;</span>,</span>
+<span id="cb20-5"><a href="CT.html#cb20-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">parms =</span> <span class="fu">list</span>(<span class="at">split =</span> <span class="st">&quot;gini&quot;</span>))</span></code></pre></div>
+<ul>
+<li>Train a model, splitting the tree based on information index.</li>
+</ul>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="CT.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train an information-based model</span></span>
+<span id="cb21-2"><a href="CT.html#cb21-2" aria-hidden="true" tabindex="-1"></a>credit_model2 <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="at">formula =</span> default <span class="sc">~</span> ., </span>
+<span id="cb21-3"><a href="CT.html#cb21-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> credit_train, </span>
+<span id="cb21-4"><a href="CT.html#cb21-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">&quot;class&quot;</span>,</span>
+<span id="cb21-5"><a href="CT.html#cb21-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">parms =</span> <span class="fu">list</span>(<span class="at">split =</span> <span class="st">&quot;information&quot;</span>))</span></code></pre></div>
+<ul>
+<li>Generate predictions on the test set using both models.</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="CT.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions on the test set using the gini model</span></span>
+<span id="cb22-2"><a href="CT.html#cb22-2" aria-hidden="true" tabindex="-1"></a>pred1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> credit_model1, </span>
+<span id="cb22-3"><a href="CT.html#cb22-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">newdata =</span> credit_test,</span>
+<span id="cb22-4"><a href="CT.html#cb22-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)    </span>
+<span id="cb22-5"><a href="CT.html#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="CT.html#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions on the test set using the information model</span></span>
+<span id="cb22-7"><a href="CT.html#cb22-7" aria-hidden="true" tabindex="-1"></a>pred2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> credit_model2, </span>
+<span id="cb22-8"><a href="CT.html#cb22-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">newdata =</span> credit_test,</span>
+<span id="cb22-9"><a href="CT.html#cb22-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Classification error is the fraction of incorrectly classified instances. Compute and compare the test set classification error of the two models by using the <code>ce()</code> function from the <code>Metrics</code> package.</li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="CT.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Metrics)</span>
+<span id="cb23-2"><a href="CT.html#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare classification error</span></span>
+<span id="cb23-3"><a href="CT.html#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ce</span>(<span class="at">actual =</span> credit_test<span class="sc">$</span>default, </span>
+<span id="cb23-4"><a href="CT.html#cb23-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">predicted =</span> pred1)</span></code></pre></div>
+<pre><code>[1] 0.29</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="CT.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ce</span>(<span class="at">actual =</span> credit_test<span class="sc">$</span>default, </span>
+<span id="cb25-2"><a href="CT.html#cb25-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">predicted =</span> pred2)  </span></code></pre></div>
+<pre><code>[1] 0.325</code></pre>
+<hr />
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="RT.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

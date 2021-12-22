@@ -1,0 +1,15 @@
+# Bagged Trees {#BT}
+
+In this chapter, you will learn about Bagged Trees, an ensemble method, that uses a combination of trees (instead of only one).
+
+__________
+
+Introduction to bagged trees
+
+<iframe src="https://drive.google.com/file/d/1PhD56kwLEhXpvKWrRKL2qMzpCK5Hs8wq/preview" width="640" height="480"></iframe>
+
+_________
+
+
+## Advantages of bagged trees
+
